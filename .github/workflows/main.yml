@@ -53,11 +53,11 @@ jobs:
           compression-level: 6  # Default compression level
           overwrite: true  # Overwrite if an artifact with the same name exists
           include-hidden-files: false  # Exclude hidden files
-      # Use GitHub Token to push changes, if necessary
-      - name: Use GitHub Token
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # The default GitHub token
-        run: |
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
-          git push origin main  # Only if you have changes to push; ensure this is appropriate for your workflow
+#      # Use GitHub Token to push changes, if necessary
+#      - name: Use GitHub Token
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # The default GitHub token
+#        run: |
+#          git config --global user.name "GitHub Action"
+#          git config --global user.email "action@github.com"
+#          git push origin main  # Only if you have changes to push; ensure this is appropriate for your workflow
