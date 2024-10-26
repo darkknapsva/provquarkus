@@ -10,7 +10,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -20,28 +19,31 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'  # Use Temurin (OpenJDK distribution)
-          java-version: '17'       # Adjust to your required JDK version
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Cache Maven dependencies
+      - name: Cache Gradle dependencies
         uses: actions/cache@v3
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/build.gradle*', '**/settings.gradle*') }}
           restore-keys: |
-            ${{ runner.os }}-maven-
+            ${{ runner.os }}-gradle-
 
-      - name: Build with Maven
-        run: ./mvnw clean install -DskipTests
+      - name: Build with Gradle
+        run: ./gradlew build -x test  # Skip tests for faster build; remove '-x test' to run tests
 
       - name: Run tests
-        run: ./mvnw test
+        run: ./gradlew test
 
-      - name: Package Quarkus application
-        run: ./mvnw package -Dnative -Dquarkus.package.type=native
-
-      - name: Upload native executable artifact
-        uses: actions/upload-artifact@v3
+      # Upload the artifact generated in the 'build/libs' directory
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4.4.3
         with:
-          name: quarkus-app
-          path: target/*-runner
+          name: quarkus-app  # Name for the artifact in GitHub Actions
+          path: build/libs/*  # Adjust this to the correct path for your generated artifact
+          if-no-files-found: error  # Fail the action if no files are found
+          retention-days: 30  # Keep artifact for 30 days (optional)
+          compression-level: 6  # Default compression level
+          overwrite: true  # Overwrite if an artifact with the same name exists
+          include-hidden-files: false  # Exclude hidden files
