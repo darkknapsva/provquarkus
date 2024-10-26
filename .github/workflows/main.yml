@@ -8,6 +8,12 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read  # Adjust as necessary
+  pull-requests: write
+  deployments: write
+
+
 jobs:
   build:
     runs-on: ubuntu-latest
