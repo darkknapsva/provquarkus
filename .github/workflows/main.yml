@@ -9,7 +9,7 @@ on:
       - main
 
 permissions:
-  contents: read  # Adjust as necessary
+  contents: write  # Adjust as necessary
   pull-requests: write
   deployments: write
 
