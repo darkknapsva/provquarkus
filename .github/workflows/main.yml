@@ -1,0 +1,49 @@
+name: Quarkus CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/build.gradle*', '**/settings.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build with Gradle
+        run: ./gradlew build -x test  # Skip tests for faster build; remove '-x test' to run tests
+
+      - name: Run tests
+        run: ./gradlew test
+
+      # Upload the artifact generated in the 'build/libs' directory
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4.4.3
+        with:
+          name: quarkus-app  # Name for the artifact in GitHub Actions
+          path: build/libs/*  # Adjust this to the correct path for your generated artifact
+          if-no-files-found: error  # Fail the action if no files are found
+          retention-days: 30  # Keep artifact for 30 days (optional)
+          compression-level: 6  # Default compression level
+          overwrite: true  # Overwrite if an artifact with the same name exists
+          include-hidden-files: false  # Exclude hidden files
